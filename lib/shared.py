@@ -24,6 +24,13 @@ def predict(base, target, k):
 
     return predictions
 
+def calculate_error(predictions, true_labels):
+    errors = 0
+    for predicted_class, true_class in zip(predictions, true_labels):
+        if predicted_class != true_class:
+            errors += 1
+    return errors / len(true_labels)
+
 def ensemble_varying_k(base, target, k_values):
     predictions_by_classifier = []
 
@@ -51,9 +58,29 @@ def ensemble_varying_k(base, target, k_values):
 
     return ensemble_predictions
 
-def calculate_error(predictions, true_labels):
-    errors = 0
-    for predicted_class, true_class in zip(predictions, true_labels):
-        if predicted_class != true_class:
-            errors += 1
-    return errors / len(true_labels)
+def ensemble_varying_z1(Z1_subsets, Z3, k):
+    predictions_by_classifier = []
+
+    for z1 in Z1_subsets:
+        predictions = predict(z1, Z3, k)
+        predictions_by_classifier.append(predictions)
+
+    ensemble_predictions = []
+
+    for sample_predictions in zip(*predictions_by_classifier):
+        votes = {}
+
+        for prediction in sample_predictions:
+            votes[prediction] = votes.get(prediction, 0) + 1
+        max_votes = max(votes.values())
+
+        winners = [
+            target_class
+            for target_class, count in votes.items()
+            if count == max_votes
+        ]
+
+        # Solves ties
+        ensemble_predictions.append(random.choice(winners))
+
+    return ensemble_predictions
