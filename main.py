@@ -20,8 +20,8 @@ if __name__ == '__main__':
     loaders = [load_iris, load_breast_cancer, load_wine, load_digits]
 
     benchmark_best_k = [9, 3, 3, 3]  # Best K values for each dataset based on previous experiments
-    k_values = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]  # K values to test in the ensemble experiment
-    seeds = list(range(42, 52))
+    k_values = [1, 3, 5, 7, 9, 11, 13, 15, 17]  # K values to test in the ensemble experiment
+    seeds = list(range(42, 51))
 
     for dataset_name, loader, best_k in zip(datasets, loaders, benchmark_best_k):
 
