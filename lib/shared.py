@@ -1,5 +1,6 @@
 import statistics
 import random
+from sklearn.preprocessing import StandardScaler
 
 def euclidean_distance(a:list[float], b:list[float]) -> float:
     sum = 0.0
@@ -31,6 +32,44 @@ def calculate_error(predictions, true_labels):
             errors += 1
     return errors / len(true_labels)
 
+def normalize_datasets(base, target):
+    scaler = StandardScaler()
+
+    base_X = [sample[0] for sample in base]
+    base_y = [sample[1] for sample in base]
+
+    target_X = [sample[0] for sample in target]
+    target_y = [sample[1] for sample in target]
+
+    base_X = scaler.fit_transform(base_X)
+    target_X = scaler.transform(target_X)
+
+    normalized_base = list(zip(base_X, base_y))
+    normalized_target = list(zip(target_X, target_y))
+
+    return normalized_base, normalized_target
+
+def majority_vote(predictions_by_classifier):
+    ensemble_predictions = []
+
+    for sample_predictions in zip(*predictions_by_classifier):
+        votes = {}
+
+        for prediction in sample_predictions:
+            votes[prediction] = votes.get(prediction, 0) + 1
+        max_votes = max(votes.values())
+
+        winners = [
+            target_class
+            for target_class, count in votes.items()
+            if count == max_votes
+        ]
+
+        # Solves ties by randomly selecting one of the winners
+        ensemble_predictions.append(random.choice(winners))
+
+    return ensemble_predictions
+
 def ensemble_varying_k(base, target, k_values):
     predictions_by_classifier = []
 
@@ -38,51 +77,13 @@ def ensemble_varying_k(base, target, k_values):
         predictions = predict(base, target, k)
         predictions_by_classifier.append(predictions)
 
-    ensemble_predictions = []
+    return majority_vote(predictions_by_classifier)
 
-    for sample_predictions in zip(*predictions_by_classifier):
-        votes = {}
-
-        for prediction in sample_predictions:
-            votes[prediction] = votes.get(prediction, 0) + 1
-        max_votes = max(votes.values())
-
-        winners = [
-            target_class
-            for target_class, count in votes.items()
-            if count == max_votes
-        ]
-
-        # Solves ties
-        ensemble_predictions.append(random.choice(winners))
-
-    return ensemble_predictions
-
-'''
-def ensemble_varying_z1(Z1_subsets, Z3, k):
+def ensemble_varying_z1(bases, targets, k):
     predictions_by_classifier = []
 
-    for z1 in Z1_subsets:
-        predictions = predict(z1, Z3, k)
+    for base, target in zip(bases, targets):
+        predictions = predict(base, target, k)
         predictions_by_classifier.append(predictions)
 
-    ensemble_predictions = []
-
-    for sample_predictions in zip(*predictions_by_classifier):
-        votes = {}
-
-        for prediction in sample_predictions:
-            votes[prediction] = votes.get(prediction, 0) + 1
-        max_votes = max(votes.values())
-
-        winners = [
-            target_class
-            for target_class, count in votes.items()
-            if count == max_votes
-        ]
-
-        # Solves ties
-        ensemble_predictions.append(random.choice(winners))
-
-    return ensemble_predictions
-'''
+    return majority_vote(predictions_by_classifier)
