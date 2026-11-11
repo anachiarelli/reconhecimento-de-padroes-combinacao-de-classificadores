@@ -58,6 +58,7 @@ def ensemble_varying_k(base, target, k_values):
 
     return ensemble_predictions
 
+'''
 def ensemble_varying_z1(Z1_subsets, Z3, k):
     predictions_by_classifier = []
 
@@ -84,3 +85,4 @@ def ensemble_varying_z1(Z1_subsets, Z3, k):
         ensemble_predictions.append(random.choice(winners))
 
     return ensemble_predictions
+'''
