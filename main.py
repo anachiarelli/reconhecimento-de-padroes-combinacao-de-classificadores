@@ -30,9 +30,9 @@ if __name__ == '__main__':
         z3_indices = {sample[2] for sample in z3}
         z3_data = [(sample[0], sample[1]) for sample in z3]
 
-        z1 = select_z1(loader, z3_indices, seed=42, r1=0.8)
+        z1 = select_z1(loader, z3_indices, seed=42, r1=0.5)
 
-        z1 = select_z1(loader, z3_indices, seed=42, r1=0.8)
+        z1 = select_z1(loader, z3_indices, seed=42, r1=0.5)
         z1_normalized, z3_normalized = normalize_datasets(z1, z3_data)
         true_labels = [sample[1] for sample in z3_data]
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         z3_normalized_subsets = []
         
         for seed in seeds:
-            z1_subset = select_z1(loader, z3_indices, seed, r1=0.8)
+            z1_subset = select_z1(loader, z3_indices, seed, r1=0.5)
             
             # Normalize Z1 and Z3 according to the specific Z1 subset
             z1_normalized, z3_normalized = normalize_datasets(z1_subset, z3_data)
